@@ -1,0 +1,367 @@
+{% extends "document-public.html" %}
+
+{% block body %}
+<div class="col-md-6 col-lg-4 ml-auto mr-auto pt-5 mt-5">
+    <div id="vApp" v-cloak>
+        <form ref="form" v-on:submit.prevent="onSubmit" v-on:change="touched=true" action="/apply" method="POST" class="form-login" novalidate enctype="multipart/form-data">
+            <div class="form-header">
+                <h1 class="h6 mb-0">Apply for Resident ID</h1>
+            </div>
+            <div class="form-body">
+                {% include 'parts/flash.html' %}
+                <div v-bind:style="pageStyle(1)">
+                    <h2 class="h6">Personal Information</h2>
+
+                    {% set name = 'firstName' %}
+                    {% include 'parts/form-group-text.html' %}
+
+                    {% set name = 'middleName' %}
+                    {% include 'parts/form-group-text.html' %}
+
+                    {% set name = 'lastName' %}
+                    {% include 'parts/form-group-text.html' %}
+
+                    {% set name = 'suffix' %}
+                    {% set options = [{value:'', text:''}, {value:'II', text:'II'}, {value:'III', text:'III'}, {value:'IV', text:'IV'}, {value:'Jr.', text:'Jr.'}, {value:'Sr.', text:'Sr.'}] %}
+                    {% include 'parts/form-group-select.html' %}
+
+                    {% set name = 'birthDate' %}
+                    {% include 'parts/form-group-date.html' %}
+
+                    {% set name = 'gender' %}
+                    {% set options = [{value:'', text:''}, {value:'M', text:'Male'}, {value:'F', text:'Female'}, {value:'O', text:'Other'}] %}
+                    {% include 'parts/form-group-select.html' %}
+
+                    {% set name = 'civilStatus' %}
+                    {% set options = [{value:'', text:''}, {value:'Single', text:'Single'}, {value:'Married', text:'Married'}, {value:'Separated', text:'Separated'}, {value:'Widowed', text:'Widowed'}] %}
+                    {% include 'parts/form-group-select.html' %}
+
+                    <div class="form-row">
+                        <div class="col-md-12">
+                            <button class="btn btn-primary btn-full-width">Next</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-bind:style="pageStyle(2)">
+                    {% include 'parts/permanent-address.html' %}
+                    <div class="form-row">
+                        <div class="col-sm-6 order-sm-1 mb-2">
+                            <button class="btn btn-primary btn-full-width">Next</button>
+                        </div>
+                        <div class="col-sm-6 order-sm-0 mb-2">
+                            <button v-on:click.prevent="back()" type="button" class="btn btn-light btn-full-width">Back</button>
+                        </div>
+                    </div>
+                </div>
+                <div v-bind:style="pageStyle(3)">
+                    <h2 class="h6">Contact Information</h2>
+                    <p>Please use an active mobile number that you own.</p>
+                    <div class="form-group">
+                        <label for="mobileNumber">Mobile Number (11-digit)</label>
+                        <input v-on:keyup="mobileNumber = formatMobileNumber(mobileNumber)" v-model="mobileNumber" id="mobileNumber" type="text" name="mobileNumber" class="form-control" value="">
+                        <small class="invalid-feedback">${getError('mobileNumber')}</small>
+                        <small>Example: 09991234567</small>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="col-sm-6 order-sm-1 mb-2">
+                            <button class="btn btn-primary btn-full-width">Next</button>
+                        </div>
+                        <div class="col-sm-6 order-sm-0 mb-2">
+                            <button v-on:click.prevent="back()" type="button" class="btn btn-light btn-full-width">Back</button>
+                        </div>
+                    </div>
+                </div>
+                <div v-bind:style="pageStyle(4)">
+                    <h2 class="h6">Login Information</h2>
+                    <p>Please save your password. You will use this once your application is approved.</p>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-group mb-3 input-group-password">
+                            <input v-model="password" id="password" v-bind:type="passwordType" name="password" class="form-control" value="">
+                            <div class="input-group-append">
+                                <span class="input-group-text">
+                                    <button v-on:click="togglePassword" class="btn btn-sm" type="button">
+                                        <svg v-if="passwordType==='password'" style="width:24px;height:24px" viewBox="0 0 24 24"><path fill="currentColor" d="M11.83,9L15,12.16C15,12.11 15,12.05 15,12A3,3 0 0,0 12,9C11.94,9 11.89,9 11.83,9M7.53,9.8L9.08,11.35C9.03,11.56 9,11.77 9,12A3,3 0 0,0 12,15C12.22,15 12.44,14.97 12.65,14.92L14.2,16.47C13.53,16.8 12.79,17 12,17A5,5 0 0,1 7,12C7,11.21 7.2,10.47 7.53,9.8M2,4.27L4.28,6.55L4.73,7C3.08,8.3 1.78,10 1,12C2.73,16.39 7,19.5 12,19.5C13.55,19.5 15.03,19.2 16.38,18.66L16.81,19.08L19.73,22L21,20.73L3.27,3M12,7A5,5 0 0,1 17,12C17,12.64 16.87,13.26 16.64,13.82L19.57,16.75C21.07,15.5 22.27,13.86 23,12C21.27,7.61 17,4.5 12,4.5C10.6,4.5 9.26,4.75 8,5.2L10.17,7.35C10.74,7.13 11.35,7 12,7Z" /></svg>
+                                        <svg v-else style="width:24px;height:24px" viewBox="0 0 24 24"><path fill="currentColor" d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z" /></svg>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                        <small class="invalid-feedback">${getError('password')}</small>
+                    </div>
+                    <div class="form-row">
+                        <div class="col-sm-6 order-sm-1 mb-2">
+                            <button class="btn btn-primary btn-full-width">Next</button>
+                        </div>
+                        <div class="col-sm-6 order-sm-0 mb-2">
+                            <button v-on:click.prevent="back()" type="button" class="btn btn-light btn-full-width">Back</button>
+                        </div>
+                    </div>
+                </div>
+                <div v-bind:style="pageStyle(5)">
+                    <h2 class="h6">Profile Picture</h2>
+                    <p>Please upload a formal photo showing your face.</p>
+                    <div class="form-group">
+                        <label for="profilePhoto">Photo</label>
+                        <div v-for="preview in profilePhotoPreviews" class="text-center">
+                            <img v-bind:src="preview" class="m-3" width="150">
+                        </div>
+                        <div class="custom-file">
+                            <input ref="profilePhoto" accept="image/*" v-on:change="onFileSelect($event, 'profilePhoto', 'Choose photo', 'profilePhotoLabel', 'profilePhotoPreviews')" id="profilePhoto" name="profilePhoto" type="file" class="custom-file-input">
+                            <label class="custom-file-label" for="profilePhoto">${profilePhotoLabel}</label>
+                        </div>
+                        <small class="invalid-feedback">${getError('profilePhoto')}</small>
+                    </div>
+                    <div class="form-group">
+<!--                        <canvas id="canvas" style="width:100%; max-width:400px; min-height:300px; margin:0 auto; background:black" ></canvas>-->
+                    </div>
+                    <div class="form-row">
+                        <div class="col-sm-6 order-sm-1 mb-2">
+                            <button class="btn btn-primary btn-full-width">Next</button>
+                        </div>
+                        <div class="col-sm-6 order-sm-0 mb-2">
+                            <button v-on:click.prevent="back()" type="button" class="btn btn-light btn-full-width">Back</button>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <p class="text-center">Already have a Resident ID? <a href="/login">Click here to Login</a></p>
+            </div>
+        </form>
+
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script src="{{app.url}}/js/vue-ph-address.js"></script>
+<script src="{{app.url}}/js/vue-password-helpers.js"></script>
+<script>
+    var vApp = new Vue({
+        el: '#vApp',
+        delimiters: ["${", "}"],
+        mixins: [
+            window.vuelidate.validationMixin,
+            window.vuelidateExtendMixin,
+            window.VuePhAddress.mixin,
+            window.VuePhAddress.mixinRegions,
+            window.VuePhAddress.mixinPresentAddress,
+            window.VuePhAddress.mixinPermanentAddress,
+            window.VuePasswordHelpers.mixinHideShow
+        ],
+        data: {
+            touched: false,
+            page: 1,
+            maxPage: 5,
+            firstName: '',
+            middleName: '',
+            lastName: '',
+            suffix: '',
+            gender: 'M',
+            civilStatus: 'Single',
+            birthDate: '',
+
+            region1: '06',
+            province1: '0679',
+            cityMun1: '067901',
+            brgyDistrict1: '',
+            unit1: '',
+
+            mobileNumber: '',
+
+            password: '',
+
+            profilePhoto: [],
+            profilePhotoLabel: 'Choose photo',
+            profilePhotoPreviews: []
+        },
+        validations: {
+            firstName: {
+                required: window.validators.requiredIf(function() {
+                    return this.page === 1;
+                })
+            },
+            middleName: {
+                required: window.validators.requiredIf(function() {
+                    return this.page === 1;
+                })
+            },
+            lastName: {
+                required: window.validators.requiredIf(function() {
+                    return this.page === 1;
+                })
+            },
+            gender: {
+                required: window.validators.requiredIf(function() {
+                    return this.page === 1;
+                })
+            },
+            civilStatus: {
+                required: window.validators.requiredIf(function() {
+                    return this.page === 1;
+                })
+            },
+            birthDate: {
+                required: window.validators.requiredIf(function() {
+                    return this.page === 1;
+                })
+            },
+
+            region1: {
+                required: window.validators.requiredIf(function() {
+                    return this.page === 2;
+                })
+            },
+            cityMun1: {
+                required: window.validators.requiredIf(function() {
+                    return this.page === 2;
+                })
+            },
+            brgyDistrict1: {
+                required: window.validators.requiredIf(function() {
+                    return this.page === 2;
+                })
+            },
+
+            mobileNumber: {
+                required: window.validators.requiredIf(function() {
+                    return this.page === 3;
+                }),
+                minLength:  window.validators.minLength(11),
+            },
+
+            password: {
+                required: window.validators.requiredIf(function() {
+                    return this.page === 4;
+                }),
+                minLength:  window.validators.minLength(8),
+            },
+
+            profilePhoto: {
+                required: window.validators.requiredIf(function() {
+                    return this.page === 5;
+                }),
+                minFile:  window.customValidators.minFile(1),
+            }
+        },
+        created: function(){
+            var me = this
+            var video = document.createElement("video");
+            var canvasElement = document.getElementById("canvas");
+            var canvas = canvasElement.getContext("2d");
+            var stopLoop = false
+            // Use facingMode: environment to attemt to get the front camera on phones
+           /* navigator.mediaDevices.getUserMedia({ video: { width:400, height:300, facingMode: "user" } }).then(function(stream) {
+                video.srcObject = stream;
+                me.stream = stream
+                video.setAttribute("playsinline", true); // required to tell iOS safari we don't want fullscreen
+                video.play();
+                requestAnimationFrame(tick);
+            }).catch(function(error){
+                alert(error)
+            })*/
+
+            function tick() {
+                if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                    canvasElement.hidden = false;
+                    canvasElement.height = video.videoHeight;
+                    canvasElement.width = video.videoWidth;
+                    canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+                    var imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
+                }
+                if(!stopLoop){
+                    requestAnimationFrame(tick);
+                }
+            }
+        },
+        methods: {
+            formatMobileNumber: function(value){
+                var formatted = value.replace(/([^0-9])+/g, ''); // Remove non numeric chars
+                formatted = formatted.replace(/^63/g, '0'); // Replace 63 with 0
+                formatted = formatted.substr(0, 11); // Limit length
+                return formatted;
+            },
+            pageStyle: function(current){
+                if(this.page !== current){
+                    return 'visibility:hidden; height: 1px; overflow: hidden;';
+                }
+                return '';
+            },
+            onFileSelect: function(event, varName, labelDefault, labelVarName, previewVarName){
+                var me = this;
+                if(labelDefault === undefined){
+                    labelDefault = 'Choose file'
+                }
+                var files = [];
+                var fileNames = [];
+                var fileImages = [];
+
+                // Get selected files
+                if ('target' in event) {
+                    if ('files' in event.target) {
+                        var fileList = event.target.files // Available in IE11
+                        for(var x = 0; x < fileList.length; x++){
+                            var file = fileList[x];
+                            files.push(fileList[x]);
+                            fileNames.push(fileList[x].name);
+                            fileImages.push('data:image/jpeg;base64,/9j/4QCuRXhpZgAASUkqAAgAAAADADEBAgAeAAAAMgAAADIBAgAaAAAAUAAAAGmHBAABAAAAagAAAAAAAABBZG9iZSBQaG90b3Nob3AgQ1M1LjEgV2luZG93cwAyMDE4LTA1LTA1VDEwOjIyOjUzKzA4OjAwAAQAAJAHAAQAAAAwMjIwCZIDAAEAAABhAAAAAqAEAAEAAAD6AAAAA6AEAAEAAAD6AAAAAAAAAPoAAAAAAP/sABFEdWNreQABAAQAAAAeAAD/4QQ/aHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLwA8P3hwYWNrZXQgYmVnaW49Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/PiA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJBZG9iZSBYTVAgQ29yZSA1LjAtYzA2MSA2NC4xNDA5NDksIDIwMTAvMTIvMDctMTA6NTc6MDEgICAgICAgICI+IDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+IDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIiB4bWxuczp4bXBSaWdodHM9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9yaWdodHMvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNS4xIFdpbmRvd3MiIHhtcDpDcmVhdGVEYXRlPSIyMDE4LTA1LTA1VDA3OjU2OjIxKzA4OjAwIiB4bXA6TW9kaWZ5RGF0ZT0iMjAxOC0wNS0wNVQxMDoyMjo1MyswODowMCIgeG1wOk1ldGFkYXRhRGF0ZT0iMjAxOC0wNS0wNVQx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');
+
+                            // Check if FileReader exist
+                            if (typeof FileReader !== "undefined" && ['image/png', 'image/jpeg', 'image/jpg'].indexOf(file.type) !== -1){
+                                var reader = new FileReader();
+                                reader.counter = x;
+                                reader.addEventListener("load", function (e) {
+                                    me.$set(fileImages, e.target.counter, e.target.result);
+                                }, false);
+                                reader.readAsDataURL(file);
+                            }
+
+                        }
+                    }
+                }
+                if(fileNames.length && this[labelVarName]){
+                    this[labelVarName] = fileNames.join(', ');
+                } else {
+                    this[labelVarName] = labelDefault;
+                }
+                if(fileImages.length && this[previewVarName]){
+                    this.$set(this, previewVarName, fileImages);
+                }
+                this[varName] = files;
+            },
+            back: function(){
+                this.$v.$touch()
+                if (this.$v.$error) {
+                    alert('Please correct the errors to continue.')
+                } else {
+                    this.page = this.page - 1;
+                }
+            },
+            onSubmit: function(){
+                var me = this;
+                me.$v.$touch()
+                if (me.$v.$error) {
+                    alert('Please correct the errors to continue.')
+                } else {
+                    if(this.page < this.maxPage) {
+                        this.page++;
+                    } else {
+                        me.$nextTick(function() {
+                            me.$refs.form.submit();
+                        });
+                    }
+
+                }
+            }
+        }
+    });
+    /*window.onbeforeunload = confirmExit;
+    function confirmExit() {
+        if(vApp.touched){
+            return "You did not save, do you want to do it now?";
+        }
+    }*/
+</script>
+{% endblock %}

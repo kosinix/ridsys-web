@@ -1,0 +1,170 @@
+{% extends "document.html" %}
+
+{% block body %}
+<div class="col-md-12">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <div class="d-flex align-items-start">
+            <div class="pt-2">
+                {% include 'parts/btn-toggle.html' %}
+            </div>
+            <h1 class="h2 ml-2">Add Resident</h1>
+        </div>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group mr-2">
+                <a href="/resident/all" class="btn btn-sm btn-outline-primary">Back</a>
+            </div>
+        </div>
+    </div>
+    <form ref="form" id="vApp" v-cloak v-on:submit.prevent="onSubmit" action="/resident/create" method="POST" class="form-default">
+        <h3>Personal Info</h3>
+        {% set name = 'firstName' %}
+        {% include 'parts/form-group-text.html' %}
+
+        {% set name = 'middleName' %}
+        {% include 'parts/form-group-text.html' %}
+
+        {% set name = 'lastName' %}
+        {% include 'parts/form-group-text.html' %}
+
+        {% set name = 'suffix' %}
+        {% set options = [{value:'', text:''}, {value:'II', text:'II'}, {value:'III', text:'III'}, {value:'IV', text:'IV'}, {value:'Jr.', text:'Jr.'}, {value:'Sr.', text:'Sr.'}] %}
+        {% include 'parts/form-group-select.html' %}
+
+        {% set name = 'birthDate' %}
+        {% include 'parts/form-group-date.html' %}
+
+        {% set name = 'gender' %}
+        {% set options = [{value:'', text:''}, {value:'M', text:'Male'}, {value:'F', text:'Female'}, {value:'O', text:'Other'}] %}
+        {% include 'parts/form-group-select.html' %}
+
+        {% set name = 'civilStatus' %}
+        {% set options = [{value:'', text:''}, {value:'Single', text:'Single'}, {value:'Married', text:'Married'}, {value:'Separated', text:'Separated'}, {value:'Widowed', text:'Widowed'}] %}
+        {% include 'parts/form-group-select.html' %}
+
+        {% set name = 'photo' %}
+        {% include 'parts/form-group-file.html' %}
+
+        {#
+        {% include 'parts/permanent-address.html' %}
+
+        <div class="form-group mb-4">
+            <label class="mr-2" for="addressSame">Is Present Address The Same With Permanent Address?</label>
+            <div class="custom-control custom-checkbox">
+                <input v-model="addressSame" value="true" name="addressSame" type="checkbox" class="custom-control-input" id="addressSame">
+                <label class="custom-control-label" for="addressSame">Yes</label>
+            </div>
+        </div>
+        <div v-if="addressSame!=1">
+        {% include 'parts/present-address.html' %}
+        </div>
+        #}
+
+        <div class="form-row pt-3 pb-3">
+            <div class="col-md-12">
+                <button class="btn btn-primary">Add Resident</button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script src="{{app.url}}/js/vue-ph-address.js"></script>
+<script>
+    var vApp = new Vue({
+        el: '#vApp',
+        delimiters: ["${", "}"],
+        mixins: [
+            window.vuelidate.validationMixin,
+            window.vuelidateExtendMixin,
+            window.VuePhAddress.mixin,
+            window.VuePhAddress.mixinRegions,
+            window.VuePhAddress.mixinPresentAddress,
+            window.VuePhAddress.mixinPermanentAddress,
+        ],
+        data: {
+            page: 1,
+            firstName: '',
+            middleName: '',
+            lastName: '',
+            suffix: '',
+            gender: 'M',
+            civilStatus: 'Single',
+            birthDate: '',
+            // region1: '06',
+            // province1: '0679',
+            // cityMun1: '067901',
+            // brgyDistrict1: '',
+            // unit1: '',
+            // addressSame: false
+        },
+        validations: {
+            firstName: {
+                requiredIf: window.validators.requiredIf(function() {
+                    return this.page === 1;
+                })
+            },
+            middleName: {
+                requiredIf: window.validators.requiredIf(function() {
+                    return this.page === 1;
+                })
+            },
+            lastName: {
+                requiredIf: window.validators.requiredIf(function() {
+                    return this.page === 1;
+                })
+            },
+            gender: {
+                requiredIf: window.validators.requiredIf(function() {
+                    return this.page === 1;
+                })
+            },
+            civilStatus: {
+                requiredIf: window.validators.requiredIf(function() {
+                    return this.page === 1;
+                })
+            },
+            birthDate: {
+                requiredIf: window.validators.requiredIf(function() {
+                    return this.page === 1;
+                })
+            },
+            region1: {
+                requiredIf: window.validators.requiredIf(function() {
+                    return this.page === 2;
+                })
+            },
+            cityMun1: {
+                requiredIf: window.validators.requiredIf(function() {
+                    return this.page === 2;
+                })
+            },
+            brgyDistrict1: {
+                requiredIf: window.validators.requiredIf(function() {
+                    return this.page === 2;
+                })
+            }
+        },
+        methods: {
+            pageStyle: function(current){
+                if(this.page !== current){
+                    return 'visibility:hidden; height: 1px; overflow: hidden;';
+                }
+                return '';
+            },
+            onSubmit: function(){
+                var me = this;
+                me.$v.$touch();
+                if (me.$v.$error) {
+                    alert('Please correct the errors to continue.');
+                } else {
+                    me.$nextTick(function() {
+                        me.$refs.form.submit();
+                    });
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}
+

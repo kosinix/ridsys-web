@@ -1,0 +1,52 @@
+{
+  "name": "ridsys-web",
+  "version": "0.1.0",
+  "description": "Resident ID system - web app",
+  "main": "index.js",
+  "scripts": {
+    "dev": "set NODE_ENV=dev&& nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kosinix/ridsys-web.git"
+  },
+  "keywords": [],
+  "author": "Nico Amarilla",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kosinix/ridsys-web/issues"
+  },
+  "homepage": "https://github.com/kosinix/ridsys-web#readme",
+  "dependencies": {
+    "acrb": "^0.1.0",
+    "aws-sdk": "^2.694.0",
+    "axios": "^0.19.2",
+    "body-parser": "^1.19.0",
+    "compression": "^1.7.4",
+    "connect-sqlite3": "^0.9.11",
+    "cookie-parser": "^1.4.5",
+    "exif-reader": "^1.0.3",
+    "express": "^4.17.1",
+    "express-fileupload": "^1.1.7-alpha.3",
+    "express-session": "^1.17.1",
+    "form-data": "^3.0.0",
+    "guess-file-type": "^1.0.1",
+    "he": "^1.2.0",
+    "kisapmata": "^1.2.1",
+    "lodash": "^4.17.15",
+    "moment": "^2.26.0",
+    "mongoose": "^5.9.18",
+    "nanoid": "^3.1.10",
+    "nunjucks": "^3.2.1",
+    "ph-address": "^1.2.1",
+    "pigura": "^1.0.1",
+    "qr-image": "^3.2.0",
+    "sharp": "^0.25.3",
+    "troso": "^2.0.1",
+    "uuid": "^8.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}
